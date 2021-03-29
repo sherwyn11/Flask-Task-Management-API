@@ -1,6 +1,6 @@
 import logging
 from flask import Flask, request as req
-from app.controllers import pages
+from app.routers import user, task
 from app.models import db
 
 def create_app(config_filename):
@@ -8,7 +8,8 @@ def create_app(config_filename):
     app = Flask(__name__)
 
     app.config.from_object(config_filename)
-    app.register_blueprint(pages.blueprint)
+    app.register_blueprint(user.blueprint)
+    app.register_blueprint(task.blueprint)
     app.logger.setLevel(logging.NOTSET)
 
     db.init_app(app)
