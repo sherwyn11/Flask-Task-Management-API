@@ -5,6 +5,7 @@ from app.models.user import User
 from app.models.task import Task
 
 from app.middleware.auth import auth_middleware
+from config.constants.constants import UNAUTHORIZED_USER_ERROR_MESSAGE
 
 
 blueprint = Blueprint('pages', __name__)
@@ -91,6 +92,37 @@ def signup_admin():
         }
         return make_response(jsonify(response_object)), 202
 
+@blueprint.route('/api/get-user-details', methods=['GET'])
+def get_user_details():
+    try:
+        token = request.headers['Authorization'].split(' ')[1]
+        user = auth_middleware(token)
+        
+        if user:
+            user = {
+                'id': user.id,
+                'email': user.email,
+                'user_type': 'admin' if user.user_type == 1 else 'worker'
+            }
+            response_object = {
+                'status': 'Success',
+                'message': user,
+            }
+            return make_response(jsonify(response_object)), 200
+        else:
+            response_object = {
+                'status': 'Failed',
+                'message': UNAUTHORIZED_USER_ERROR_MESSAGE,
+            }
+            return make_response(jsonify(response_object)), 401
+    except:
+        response_object = {
+            'status': 'Failed',
+            'message': UNAUTHORIZED_USER_ERROR_MESSAGE,
+        }
+        return make_response(jsonify(response_object)), 401
+
+
 
 @blueprint.route('/api/create-task', methods=['POST'])
 def create_task():
@@ -118,13 +150,13 @@ def create_task():
         else:
             response_object = {
                 'status': 'Failed',
-                'message': 'User is unauthorized!',
+                'message': UNAUTHORIZED_USER_ERROR_MESSAGE,
             }
             return make_response(jsonify(response_object)), 401
     except:
         response_object = {
             'status': 'Failed',
-            'message': 'User is unauthorized!',
+            'message': UNAUTHORIZED_USER_ERROR_MESSAGE,
         }
         return make_response(jsonify(response_object)), 401
 
@@ -158,13 +190,13 @@ def view_assigned_tasks():
         else:
             response_object = {
                 'status': 'Failed',
-                'message': 'User is unauthorized!',
+                'message': UNAUTHORIZED_USER_ERROR_MESSAGE,
             }
             return make_response(jsonify(response_object)), 401
     except:
         response_object = {
             'status': 'Failed',
-            'message': 'User is unauthorized!',
+            'message': UNAUTHORIZED_USER_ERROR_MESSAGE,
         }
         return make_response(jsonify(response_object)), 401
 
@@ -199,14 +231,14 @@ def view_created_tasks():
         else:
             response_object = {
                 'status': 'Failed',
-                'message': 'User is unauthorized!',
+                'message': UNAUTHORIZED_USER_ERROR_MESSAGE,
             }
             return make_response(jsonify(response_object)), 401
 
     except:
         response_object = {
             'status': 'Failed',
-            'message': 'User is unauthorized!',
+            'message': UNAUTHORIZED_USER_ERROR_MESSAGE,
         }
         return make_response(jsonify(response_object)), 401
 
@@ -233,12 +265,12 @@ def update_task():
         else:
             response_object = {
                 'status': 'Failed',
-                'message': 'User is unauthorized!',
+                'message': UNAUTHORIZED_USER_ERROR_MESSAGE,
             }
             return make_response(jsonify(response_object)), 401
     except:
         response_object = {
             'status': 'Failed',
-            'message': 'User is unauthorized!',
+            'message': UNAUTHORIZED_USER_ERROR_MESSAGE,
         }
         return make_response(jsonify(response_object)), 401

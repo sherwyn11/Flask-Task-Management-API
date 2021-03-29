@@ -1,0 +1,1 @@
+UNAUTHORIZED_USER_ERROR_MESSAGE = 'User is unauthorized!'
