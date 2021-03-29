@@ -91,28 +91,152 @@ def signup_admin():
         }
         return make_response(jsonify(response_object)), 202
 
+
 @blueprint.route('/api/create-task', methods=['POST'])
 def create_task():
-
-    token = request.headers['Authorization'].split(' ')[1]
-    user = auth_middleware(token)
-
-    if user is not None and user.user_type == 1:
+    try:
+        token = request.headers['Authorization'].split(' ')[1]
+        user = auth_middleware(token)
         worker_id = request.form['worker_id']
-        title = request.form['title']
-        admin_id = user.id
+        
+        worker = User.query.filter_by(id=worker_id).first()
 
-        task = Task(worker_id=worker_id, admin_id=admin_id, title=title)
-        db.session.add(task)
-        db.session.commit()
+        if user is not None and user.user_type == 1 and worker.user_type == 0:
+            title = request.form['title']
+            admin_id = user.id
 
+            task = Task(worker_id=worker_id, admin_id=admin_id, title=title)
+            db.session.add(task)
+            db.session.commit()
+
+            response_object = {
+                'status': 'Success',
+                'message': 'Task: {} is created successfully!'.format(title),
+            }
+            return make_response(jsonify(response_object)), 201
+        
+        else:
+            response_object = {
+                'status': 'Failed',
+                'message': 'User is unauthorized!',
+            }
+            return make_response(jsonify(response_object)), 401
+    except:
         response_object = {
-            'status': 'Success',
-            'message': 'Task: {} is created successfully!'.format(title),
+            'status': 'Failed',
+            'message': 'User is unauthorized!',
         }
-        return make_response(jsonify(response_object)), 201
-    
-    else:
+        return make_response(jsonify(response_object)), 401
+
+
+@blueprint.route('/api/view-assigned-tasks', methods=['GET'])
+def view_assigned_tasks():
+    try:
+        token = request.headers['Authorization'].split(' ')[1]
+        user = auth_middleware(token)
+
+        if user is not None and user.user_type == 0:
+
+            tasks = Task.query.filter_by(worker_id=user.id).all()
+
+            assigned_tasks = []
+
+            for task in tasks:
+                assigned_tasks.append({
+                    'id': task.id,
+                    'title': task.title,
+                    'admin_id': task.admin_id,
+                    'completed': task.completed
+                })
+
+            response_object = {
+                'status': 'Success',
+                'message': assigned_tasks
+            }
+            return make_response(jsonify(response_object)), 200
+        
+        else:
+            response_object = {
+                'status': 'Failed',
+                'message': 'User is unauthorized!',
+            }
+            return make_response(jsonify(response_object)), 401
+    except:
+        response_object = {
+            'status': 'Failed',
+            'message': 'User is unauthorized!',
+        }
+        return make_response(jsonify(response_object)), 401
+
+
+
+@blueprint.route('/api/view-created-tasks', methods=['GET'])
+def view_created_tasks():
+    try:
+        token = request.headers['Authorization'].split(' ')[1]
+        user = auth_middleware(token)
+
+        if user is not None and user.user_type == 1:
+
+            tasks = Task.query.filter_by(admin_id=user.id).all()
+
+            created_tasks = []
+
+            for task in tasks:
+                created_tasks.append({
+                    'id': task.id,
+                    'title': task.title,
+                    'worker_id': task.worker_id,
+                    'completed': task.completed
+                })
+
+            response_object = {
+                'status': 'Success',
+                'message': created_tasks
+            }
+            return make_response(jsonify(response_object)), 200
+        
+        else:
+            response_object = {
+                'status': 'Failed',
+                'message': 'User is unauthorized!',
+            }
+            return make_response(jsonify(response_object)), 401
+
+    except:
+        response_object = {
+            'status': 'Failed',
+            'message': 'User is unauthorized!',
+        }
+        return make_response(jsonify(response_object)), 401
+
+
+@blueprint.route('/api/update-task', methods=['PATCH'])
+def update_task():
+    try:
+        token = request.headers['Authorization'].split(' ')[1]
+        user = auth_middleware(token)
+        if user is not None and user.user_type == 0:
+
+            task = Task.query.filter_by(id=request.args['tid']).first()
+            task.completed = not task.completed
+            db.session.commit()
+
+            message = 'completed' if task.completed else 'not completed'
+
+            response_object = {
+                'status': 'Success',
+                'message': 'Task is marked as {}'.format(message)
+            }
+            return make_response(jsonify(response_object)), 201
+        
+        else:
+            response_object = {
+                'status': 'Failed',
+                'message': 'User is unauthorized!',
+            }
+            return make_response(jsonify(response_object)), 401
+    except:
         response_object = {
             'status': 'Failed',
             'message': 'User is unauthorized!',
