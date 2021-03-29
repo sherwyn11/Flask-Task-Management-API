@@ -11,7 +11,11 @@ def signup_worker_controller(email, password, user_type):
         user = User(email=email, password=password, user_type=user_type)
         db.session.add(user)
         db.session.commit()
+
         auth_token = user.encode_auth_token(user.id)
+        user.token = auth_token
+        db.session.commit()
+
         response_object = {
             'status': 'Success',
             'message': 'Worker registered!',
@@ -35,7 +39,11 @@ def signup_admin_controller(email, password, user_type):
         user = User(email=email, password=password, user_type=user_type)
         db.session.add(user)
         db.session.commit()
+        
         auth_token = user.encode_auth_token(user.id)
+        user.token = auth_token
+        db.session.commit()
+        
         response_object = {
             'status': 'Success',
             'message': 'Admin registered!',
@@ -57,6 +65,9 @@ def login_controller(email, password):
 
     if user:
         auth_token = user.encode_auth_token(user.id)
+        user.token = auth_token
+        db.session.commit()
+        
         response_object = {
             'status': 'Success',
             'message': 'User logged in successfully!',
