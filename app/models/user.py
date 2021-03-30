@@ -1,7 +1,7 @@
 import jwt
 import datetime
 from app.models import db
-from config.deployment import JWT_SECRET
+from app.config.production.settings import JWT_SECRET
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

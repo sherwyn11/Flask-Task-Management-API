@@ -4,7 +4,7 @@ from app.models import db
 from app.models.user import User
 from app.models.task import Task
 from app.middleware.auth import auth_middleware
-from config.constants.constants import UNAUTHORIZED_USER_ERROR_MESSAGE
+from app.config.constants.constants import UNAUTHORIZED_USER_ERROR_MESSAGE
 
 blueprint = Blueprint('task', __name__)
 

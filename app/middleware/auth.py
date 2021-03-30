@@ -1,6 +1,6 @@
 import jwt
 from app.models.user import User
-from config.deployment import JWT_SECRET
+from app.config.production.settings import JWT_SECRET
 
 def auth_middleware(token):
     try:

@@ -1,6 +1,6 @@
 from flask import render_template, Blueprint, request, make_response, jsonify
 from app.controllers.task import create_task_controller, view_assigned_tasks_controller, view_created_tasks_controller, update_task_controller
-from config.constants.constants import UNAUTHORIZED_USER_ERROR_MESSAGE
+from app.config.constants.constants import UNAUTHORIZED_USER_ERROR_MESSAGE
 
 blueprint = Blueprint('task', __name__)
 

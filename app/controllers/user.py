@@ -3,8 +3,8 @@ import bcrypt
 from app.models import db
 from app.models.user import User
 from app.middleware.auth import auth_middleware
-from config.constants.constants import UNAUTHORIZED_USER_ERROR_MESSAGE
-from config.development import BCRYPT_SALT
+from app.config.constants.constants import UNAUTHORIZED_USER_ERROR_MESSAGE
+from app.config.production.settings import BCRYPT_SALT
 
 def signup_worker_controller(email, password, user_type):
     user = User.query.filter_by(email=email).first()
