@@ -1,13 +1,17 @@
 from flask import render_template, Blueprint, request, make_response, jsonify
+import bcrypt
 from app.models import db
 from app.models.user import User
 from app.middleware.auth import auth_middleware
 from config.constants.constants import UNAUTHORIZED_USER_ERROR_MESSAGE
+from config.development import BCRYPT_SALT
 
 def signup_worker_controller(email, password, user_type):
     user = User.query.filter_by(email=email).first()
 
     if not user:
+        password = bcrypt.hashpw(password, BCRYPT_SALT)
+
         user = User(email=email, password=password, user_type=user_type)
         db.session.add(user)
         db.session.commit()
@@ -36,6 +40,8 @@ def signup_admin_controller(email, password, user_type):
     user = User.query.filter_by(email=email).first()
 
     if not user:
+        password = bcrypt.hashpw(password, BCRYPT_SALT)
+        
         user = User(email=email, password=password, user_type=user_type)
         db.session.add(user)
         db.session.commit()
@@ -61,19 +67,26 @@ def signup_admin_controller(email, password, user_type):
 
 
 def login_controller(email, password):
-    user = User.query.filter_by(email=email, password=password).first()
+    user = User.query.filter_by(email=email).first()
 
     if user:
-        auth_token = user.encode_auth_token(user.id)
-        user.token = auth_token
-        db.session.commit()
-        
-        response_object = {
-            'status': 'Success',
-            'message': 'User logged in successfully!',
-            'token': auth_token,
-            'response_code': 200
-        }    
+        if bcrypt.checkpw(password, user.password): 
+            auth_token = user.encode_auth_token(user.id)
+            user.token = auth_token
+            db.session.commit()
+
+            response_object = {
+                'status': 'Success',
+                'message': 'User logged in successfully!',
+                'token': auth_token,
+                'response_code': 200
+            }
+        else:
+            response_object = {
+                'status': 'Failed',
+                'message': 'Email or Password is incorrect!',
+                'response_code': 401
+            }        
     else:
         response_object = {
             'status': 'Failed',
