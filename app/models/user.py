@@ -1,6 +1,7 @@
-from app.models import db
 import jwt
 import datetime
+from app.models import db
+from config.deployment import JWT_SECRET
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -24,7 +25,7 @@ class User(db.Model):
             }
             return jwt.encode(
                 payload,
-                'SECRET_KEY',
+                JWT_SECRET,
                 algorithm='HS256'
             )
         except Exception as e:
@@ -33,7 +34,7 @@ class User(db.Model):
     @staticmethod
     def decode_auth_token(auth_token):
         try:
-            payload = jwt.decode(auth_token, 'SECRET_KEY')
+            payload = jwt.decode(auth_token, JWT_SECRET)
             return payload['sub']
         except jwt.ExpiredSignatureError:
             return 'Signature expired. Please log in again.'

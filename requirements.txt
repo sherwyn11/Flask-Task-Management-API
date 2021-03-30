@@ -1,5 +1,5 @@
 Fabric==1.8.2
-Flask==0.10.1
+Flask==1.0.2
 Flask-SQLAlchemy==1.0
 gunicorn==18.0
 Jinja2==2.7.2
@@ -14,3 +14,5 @@ pycrypto==2.6.1
 wsgiref==0.1.2
 Flask-WTF==0.9.4
 pytest-xdist==1.10
+py-bcrypt==0.4
+py-jwt==2.0.1
