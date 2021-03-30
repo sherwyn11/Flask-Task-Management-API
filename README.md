@@ -1,4 +1,4 @@
-# Flask-Task
+# Flask-Task-Management-API
 
 Task Management API built using Flask, PostgreSQL, Py-Bcrypt and Py-JWT.
 
