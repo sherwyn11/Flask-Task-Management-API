@@ -12,8 +12,3 @@ class Task(db.Model):
         self.admin_id = admin_id
         self.title = title
         self.completed = completed
-
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-        
