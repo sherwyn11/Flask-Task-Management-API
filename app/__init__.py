@@ -11,7 +11,8 @@ def create_app(config_filename):
     app.register_blueprint(user.blueprint)
     app.register_blueprint(task.blueprint)
     app.logger.setLevel(logging.NOTSET)
-    print(db)
+
+    print(app.config)
     db.init_app(app)
     
     with app.app_context():
