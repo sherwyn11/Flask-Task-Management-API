@@ -1,5 +1,5 @@
 from flask import render_template, Blueprint, request, make_response, jsonify
-from app.controllers.user import signup_worker_controller, signup_admin_controller, login_controller, get_user_details_controller
+from app.controllers.user import signup_worker_controller, signup_admin_controller, login_controller, get_user_details_controller, get_all_workers_controller
 from app.config.constants.constants import UNAUTHORIZED_USER_ERROR_MESSAGE
 
 blueprint = Blueprint('user', __name__)
@@ -39,6 +39,21 @@ def get_user_details():
     try:
         token = request.headers['Authorization'].split(' ')[1]
         response = get_user_details_controller(token)
+        return make_response(jsonify(response)), response['response_code']
+    except:
+        response = {
+            'status': 'Failed',
+            'message': UNAUTHORIZED_USER_ERROR_MESSAGE,
+            'response_code': 401
+        }
+        return make_response(jsonify(response)), response['response_code']
+
+
+@blueprint.route('/api/get-all-workers', methods=['GET'])
+def get_all_workers():
+    try:
+        token = request.headers['Authorization'].split(' ')[1]
+        response = get_all_workers_controller(token)
         return make_response(jsonify(response)), response['response_code']
     except:
         response = {

@@ -6,7 +6,7 @@ from app.models import db
 import os
 import bcrypt
 
-def create_app(config_filename='config/production/settings.py'):
+def create_app(config_filename='config/development/settings.py'):
     app = Flask(__name__)
 
     app.config.from_pyfile(config_filename)

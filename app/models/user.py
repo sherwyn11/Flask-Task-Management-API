@@ -23,6 +23,7 @@ class User(db.Model):
                 'iat': datetime.datetime.utcnow(),
                 'sub': user_id
             }
+
             return jwt.encode(
                 payload,
                 JWT_SECRET,

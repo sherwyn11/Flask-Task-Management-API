@@ -1,10 +1,10 @@
-from flask import render_template, Blueprint, request, make_response, jsonify
 import bcrypt
+from flask import render_template, Blueprint, request, make_response, jsonify
 from app.models import db
 from app.models.user import User
 from app.middleware.auth import auth_middleware
 from app.config.constants.constants import UNAUTHORIZED_USER_ERROR_MESSAGE
-from app.config.production.settings import BCRYPT_SALT
+from app.config.development.settings import BCRYPT_SALT
 
 def signup_worker_controller(email, password, user_type):
     user = User.query.filter_by(email=email).first()
@@ -119,3 +119,35 @@ def get_user_details_controller(token):
         }
 
     return response_object
+
+
+def get_all_workers_controller(token):
+    user = auth_middleware(token)
+
+    if user is not None and user.user_type == 1:
+        workers = User.query.filter_by(user_type=0).all()
+        
+        all_workers = []
+
+        for worker in workers:
+            all_workers.append({
+                'id': worker.id,
+                'email': worker.email,
+                } 
+            )
+        
+        response_object = {
+            'status': 'Success',
+            'message': all_workers,
+            'response_code': 200
+        }
+    
+    else:
+        response_object = {
+            'status': 'Failed',
+            'message': UNAUTHORIZED_USER_ERROR_MESSAGE,
+            'response_code': 401
+        }
+
+    return response_object
+
